@@ -1,6 +1,7 @@
-package com.katpara.follium.linear.rectangulars;
+package com.katpara.follium.linear;
 
 import com.katpara.follium.exceptions.linears.*;
+import com.katpara.follium.linear.AnyRectangularMatrix;
 import com.katpara.follium.linear.Matrix;
 import com.katpara.follium.linear.constants.IdentityMatrix;
 import com.katpara.follium.linear.constants.ZeroMatrix;

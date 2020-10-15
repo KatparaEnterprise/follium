@@ -4,7 +4,7 @@ import com.katpara.follium.exceptions.linears.*;
 import com.katpara.follium.linear.Matrix;
 import com.katpara.follium.linear.constants.IdentityMatrix;
 import com.katpara.follium.linear.constants.ZeroMatrix;
-import com.katpara.follium.linear.rectangulars.AnyRectangularMatrix;
+import com.katpara.follium.linear.AnyRectangularMatrix;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;

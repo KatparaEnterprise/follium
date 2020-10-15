@@ -4,7 +4,7 @@ import com.katpara.follium.exceptions.linears.NotSquareMatrixException;
 import com.katpara.follium.linear.AbstractMatrix;
 import com.katpara.follium.linear.Matrix;
 import com.katpara.follium.linear.constants.IdentityMatrix;
-import com.katpara.follium.linear.rectangulars.AnyRectangularMatrix;
+import com.katpara.follium.linear.AnyRectangularMatrix;
 import com.katpara.follium.util.Rounding;
 
 import java.util.Arrays;

@@ -1,10 +1,8 @@
-package com.katpara.follium.linear.rectangulars;
+package com.katpara.follium.linear;
 
 import com.katpara.follium.exceptions.linears.NotInvertibleException;
 import com.katpara.follium.exceptions.linears.NotRectangularMatrixException;
 import com.katpara.follium.exceptions.linears.NotSquareMatrixException;
-import com.katpara.follium.linear.AbstractMatrix;
-import com.katpara.follium.linear.Matrix;
 import com.katpara.follium.linear.squares.AnySquareMatrix;
 
 public class AnyRectangularMatrix extends AbstractMatrix {
