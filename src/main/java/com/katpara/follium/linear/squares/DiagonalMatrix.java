@@ -1,10 +1,11 @@
 package com.katpara.follium.linear.squares;
 
 import com.katpara.follium.exceptions.InvalidParameterProvidedException;
-import com.katpara.follium.exceptions.linears.MatrixDimensionMismatchException;
-import com.katpara.follium.exceptions.linears.NotSquareMatrixException;
+import com.katpara.follium.exceptions.linears.*;
 import com.katpara.follium.linear.Matrix;
+import com.katpara.follium.linear.constants.IdentityMatrix;
 import com.katpara.follium.linear.constants.ZeroMatrix;
+import com.katpara.follium.linear.rectangulars.AnyRectangularMatrix;
 import com.katpara.follium.util.Rounding;
 
 import java.util.Arrays;
@@ -20,7 +21,7 @@ public final class DiagonalMatrix implements SquareMatrix {
     /**
      * Holds the matrix size
      */
-    protected final int[] s;
+    protected final int s;
 
     /**
      * The diagonal matrix construction from an array
@@ -28,8 +29,11 @@ public final class DiagonalMatrix implements SquareMatrix {
      * @param e the diagonal array
      */
     public DiagonalMatrix(final double[] e) {
+        if (e.length == 0)
+            throw new InvalidMatrixDimensionProvidedException();
+
         this.e = e;
-        this.s = new int[]{e.length, e.length};
+        this.s = e.length;
     }
 
     /**
@@ -38,6 +42,9 @@ public final class DiagonalMatrix implements SquareMatrix {
      * @param e the two-dimensional array
      */
     public DiagonalMatrix(final double[][] e) {
+        if (e.length == 0 || e[0].length == 0)
+            throw new InvalidMatrixDimensionProvidedException();
+
         if (e.length != e[0].length)
             throw new NotSquareMatrixException();
 
@@ -53,7 +60,7 @@ public final class DiagonalMatrix implements SquareMatrix {
         }
 
         this.e = n;
-        this.s = new int[]{e.length, e.length};
+        this.s = e.length;
     }
 
     /**
@@ -134,7 +141,7 @@ public final class DiagonalMatrix implements SquareMatrix {
      */
     @Override
     public final int[] size() {
-        return Arrays.copyOf(s, 2);
+        return new int[]{s, s};
     }
 
     /**
@@ -186,10 +193,10 @@ public final class DiagonalMatrix implements SquareMatrix {
      */
     @Override
     public double[] toArray() {
-        var n = new double[s[0] * s[1]];
+        var n = new double[s * s];
 
-        for (int i = 0; i < s[0]; i++) {
-            n[(i * s[0]) + i] = e[i];
+        for (int i = 0; i < s; i++) {
+            n[(i * s) + i] = e[i];
         }
 
         return n;
@@ -204,10 +211,10 @@ public final class DiagonalMatrix implements SquareMatrix {
      */
     @Override
     public double[] getRow(final int row) {
-        if (row < 0 || row > s[0])
-            throw new IndexOutOfBoundsException();
+        if (row < 0 || row >= s)
+            throw new RowOutOfBoundException();
 
-        var n = new double[s[0]];
+        var n = new double[s];
         n[row] = e[row];
         return n;
     }
@@ -221,10 +228,10 @@ public final class DiagonalMatrix implements SquareMatrix {
      */
     @Override
     public double[] getColumn(final int column) {
-        if (column < 0 || column > s[1])
-            throw new IndexOutOfBoundsException();
+        if (column < 0 || column >= s)
+            throw new ColumnOutOfBoundException();
 
-        var n = new double[s[0]];
+        var n = new double[s];
         n[column] = e[column];
         return n;
     }
@@ -237,7 +244,7 @@ public final class DiagonalMatrix implements SquareMatrix {
      */
     @Override
     public final int getRank() {
-        return s[0];
+        return s;
     }
 
     /**
@@ -266,19 +273,28 @@ public final class DiagonalMatrix implements SquareMatrix {
         if (m instanceof ZeroMatrix)
             return this;
 
-        if (m instanceof DiagonalMatrix) {
-            double[] n = Arrays.copyOf(m.getDiagonalEntries(), s[0]);
+        if (m instanceof IdentityMatrix || m instanceof DiagonalMatrix) {
+            double[] n;
 
-            for (int i = 0; i < s[0]; i++) {
-                n[i] += e[i];
+            if (m instanceof IdentityMatrix) {
+                n = Arrays.copyOf(e, s);
+                for (int i = 0; i < s; i++) {
+                    n[i] += 1;
+                }
+
+            } else {
+                n = Arrays.copyOf(m.getDiagonalEntries(), s);
+                for (int i = 0; i < s; i++) {
+                    n[i] += e[i];
+                }
             }
 
             return new DiagonalMatrix(n);
         }
 
         double[] n = Arrays.copyOf(m.toArray(), _s[0] * _s[1]);
-        for (int i = 0; i < s[0]; i++) {
-            n[(i * s[0]) + i] += e[i];
+        for (int i = 0; i < s; i++) {
+            n[(i * s) + i] += e[i];
         }
 
         return new AnySquareMatrix(n);
@@ -297,26 +313,35 @@ public final class DiagonalMatrix implements SquareMatrix {
         if (!Arrays.equals(this.size(), _s))
             throw new MatrixDimensionMismatchException();
 
-//        if (this == m)
-//            return new ZeroMatrix(); // TODO: Implemented
+        if (this == m)
+            return new ZeroMatrix(s);
 
         if (m instanceof ZeroMatrix)
             return this;
 
-        if (m instanceof DiagonalMatrix) {
-            double[] n = Arrays.copyOf(e, e.length),
-                    _e = m.getDiagonalEntries();
+        if (m instanceof IdentityMatrix || m instanceof DiagonalMatrix) {
+            double[] n;
 
-            for (int i = 0; i < s[0]; i++) {
-                n[i] -= _e[i];
+            if (m instanceof IdentityMatrix) {
+                n = Arrays.copyOf(e, s);
+                for (int i = 0; i < s; i++) {
+                    n[i] -= 1;
+                }
+
+            } else {
+                n = Arrays.copyOf(m.getDiagonalEntries(), s);
+                for (int i = 0; i < s; i++) {
+                    n[i] = e[i] - n[i];
+                }
             }
 
             return new DiagonalMatrix(n);
         }
 
-        double[] n = toArray(), _e = m.toArray();
+        var d = s + 1;
+        double[] n = Arrays.copyOf(m.toArray(), _s[0] * _s[1]);
         for (int i = 0; i < n.length; i++) {
-            n[i] -= _e[i];
+            n[i] = (i % d == 0) ? e[i / d] - n[i] : -n[i];
         }
 
         return new AnySquareMatrix(n);
@@ -325,37 +350,96 @@ public final class DiagonalMatrix implements SquareMatrix {
     /**
      * A field can multiply with another of the same type.
      *
-     * @param matrix the other field
+     * @param m the other field
      *
      * @return the resulting field
      */
     @Override
-    public Matrix multiply(final Matrix matrix) {
-        return null;
+    public Matrix multiply(final Matrix m) {
+        var _s = m.size();
+        if (s != _s[0])
+            throw new MatrixDimensionMismatchException();
+
+        if (m instanceof IdentityMatrix)
+            return this;
+
+        if (m instanceof ZeroMatrix)
+            return new ZeroMatrix(s, _s[1]);
+
+        return multiply(_s, m);
     }
 
     /**
      * A field can divided by another field of the same type.
      *
-     * @param matrix the other field
+     * @param m the other field
      *
      * @return the resulting field
      */
     @Override
-    public Matrix divide(final Matrix matrix) {
-        return null;
+    public Matrix divide(final Matrix m) {
+        var _s = m.size();
+        if (s != _s[0])
+            throw new MatrixDimensionMismatchException();
+
+        if(this == m)
+            return new IdentityMatrix(s);
+
+        if (m instanceof IdentityMatrix)
+            return this;
+
+        return multiply(_s, m.getMultiplicativeInverse());
+    }
+
+    /**
+     * A private method to multiply two matrices.
+     *
+     * @param _s the size of the given matrix
+     * @param m the multiplyng matrix
+     *
+     * @return the resulting matrix
+     */
+    private Matrix multiply(final int[] _s, final Matrix m) {
+        if (m instanceof DiagonalMatrix) {
+            double[] n = Arrays.copyOf(m.getDiagonalEntries(), s);
+            for (int i = 0; i < n.length; i++) {
+                n[i] *= e[i];
+            }
+            return new DiagonalMatrix(n);
+        }
+
+        var n = Arrays.copyOf(m.toArray(), _s[0] * _s[1]);
+        for (int i = 0; i < n.length; i++) {
+            n[i] *= e[i / _s[1]];
+        }
+
+        return (_s[0] == _s[1]) ? new AnySquareMatrix(n)
+                       : new AnyRectangularMatrix(n, s, _s[1]);
     }
 
     /**
      * The method returns the field with the given power.
      *
-     * @param power the power
+     * @param p the power
      *
      * @return the powered field
      */
     @Override
-    public Matrix power(final int power) {
-        return null;
+    public Matrix power(final int p) {
+        if (p == -1)
+            return getMultiplicativeInverse();
+        else if (p == 0)
+            return new IdentityMatrix(s);
+        else if (p == 1)
+            return this;
+        else {
+            var n = Arrays.copyOf(e, s);
+            for (int i = 0; i < n.length; i++) {
+                n[i] = Math.pow(n[i], p);
+            }
+
+            return new DiagonalMatrix(n);
+        }
     }
 
     /**
@@ -365,7 +449,13 @@ public final class DiagonalMatrix implements SquareMatrix {
      */
     @Override
     public Matrix getAdditiveInverse() {
-        return null;
+        var n = Arrays.copyOf(e, s);
+
+        for (int i = 0; i < n.length; i++) {
+            n[i] = -n[i];
+        }
+
+        return new DiagonalMatrix(n);
     }
 
     /**
@@ -375,7 +465,13 @@ public final class DiagonalMatrix implements SquareMatrix {
      */
     @Override
     public Matrix getMultiplicativeInverse() {
-        return null;
+        var n = Arrays.copyOf(e, s);
+
+        for (int i = 0; i < n.length; i++) {
+            n[i] = 1 / n[i];
+        }
+
+        return new DiagonalMatrix(n);
     }
 
     /**
@@ -519,16 +615,16 @@ public final class DiagonalMatrix implements SquareMatrix {
     @Override
     public String toString(final Rounding.Decimals decimals) {
         StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < s[0]; i++) {
+        for (int i = 0; i < s; i++) {
             sb.append("|");
-            for (int j = 0; j < s[1]; j++) {
+            for (int j = 0; j < s; j++) {
                 if (i == j) {
                     sb.append(Rounding.round(e[i], decimals));
                 } else {
                     sb.append(Rounding.round(0, decimals));
                 }
 
-                if (j != s[1] - 1)
+                if (j != s - 1)
                     sb.append(" ");
             }
             sb.append("|\n");

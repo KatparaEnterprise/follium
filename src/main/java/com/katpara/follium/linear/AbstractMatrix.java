@@ -295,6 +295,9 @@ public abstract class AbstractMatrix implements Matrix {
         if (s[1] != _s[0])
             throw new MatrixDimensionMismatchException();
 
+        if(isSquareMatrix() || m == this)
+            return new IdentityMatrix(s[0]);
+
         if(m instanceof IdentityMatrix)
             return this;
 
