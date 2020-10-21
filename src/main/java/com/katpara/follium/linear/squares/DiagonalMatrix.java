@@ -258,6 +258,16 @@ public final class DiagonalMatrix implements SquareMatrix {
     }
 
     /**
+     * A method returns an absolute value of the field.
+     *
+     * @return the absolute value
+     */
+    @Override
+    public double abs() {
+        return determinant();
+    }
+
+    /**
      * A fields can be added to another field of the same type.
      *
      * @param m the other field
@@ -348,6 +358,23 @@ public final class DiagonalMatrix implements SquareMatrix {
     }
 
     /**
+     * The method multiplies the field with a scalar entity.
+     *
+     * @param scalar the scalar entity
+     *
+     * @return the multiplied field
+     */
+    @Override
+    public Matrix multiply(final double scalar) {
+        var n = Arrays.copyOf(e, s);
+        for (int i = 0; i < n.length; i++) {
+            n[i] *= scalar;
+        }
+
+        return new DiagonalMatrix(n);
+    }
+
+    /**
      * A field can multiply with another of the same type.
      *
      * @param m the other field
@@ -378,12 +405,12 @@ public final class DiagonalMatrix implements SquareMatrix {
      */
     @Override
     public Matrix divide(final Matrix m) {
+        if(this == m)
+            return new IdentityMatrix(s);
+
         var _s = m.size();
         if (s != _s[0])
             throw new MatrixDimensionMismatchException();
-
-        if(this == m)
-            return new IdentityMatrix(s);
 
         if (m instanceof IdentityMatrix)
             return this;
@@ -511,7 +538,10 @@ public final class DiagonalMatrix implements SquareMatrix {
      */
     @Override
     public int hashCode() {
-        return Arrays.hashCode(e);
+        var result = 17;
+        result = 31 * result + Arrays.hashCode(e);
+        result = 31 * result + s;
+        return result;
     }
 
     /**

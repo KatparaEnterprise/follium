@@ -440,4 +440,32 @@ class AnySquareMatrixTest {
                 () -> assertEquals(r2, m2.power(5))
         );
     }
+
+    @Test
+    void multiplyScalar() {
+        Matrix m1 = new AnySquareMatrix(new double[][]{
+                {1, 2, 3},
+                {4, 5, 6},
+                {7, 8, 9},
+        });
+
+        Matrix r1 = new AnySquareMatrix(new double[][]{
+                {-1, -2, -3},
+                {-4, -5, -6},
+                {-7, -8, -9},
+        });
+
+        Matrix r2 = new AnySquareMatrix(new double[][]{
+                {05, 10, 15},
+                {20, 25, 30},
+                {35, 40, 45},
+        });
+
+        assertAll(
+                () -> assertEquals(r1, m1.multiply(-1)),
+                () -> assertEquals(new ZeroMatrix(3, 3), m1.multiply(0)),
+                () -> assertEquals(m1, m1.multiply(1)),
+                () -> assertEquals(r2, m1.multiply(5))
+        );
+    }
 }

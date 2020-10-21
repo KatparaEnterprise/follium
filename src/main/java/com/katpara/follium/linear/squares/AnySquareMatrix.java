@@ -9,7 +9,7 @@ import com.katpara.follium.util.Rounding;
 
 import java.util.Arrays;
 
-public class AnySquareMatrix extends AbstractMatrix implements SquareMatrix {
+public final class AnySquareMatrix extends AbstractMatrix implements SquareMatrix {
 
     /**
      * This constructor is specifically used for square matrices.
@@ -202,6 +202,18 @@ public class AnySquareMatrix extends AbstractMatrix implements SquareMatrix {
     /**
      * The method is implemented by the sub-classes.
      *
+     * @param n the scaled array
+     *
+     * @return the scaled matrix
+     */
+    @Override
+    protected Matrix doMultiply(final double[] n) {
+        return new AnySquareMatrix(n);
+    }
+
+    /**
+     * The method is implemented by the sub-classes.
+     *
      * @param n the multiplied array
      * @param m the multiplying matrix
      *
@@ -225,6 +237,16 @@ public class AnySquareMatrix extends AbstractMatrix implements SquareMatrix {
     @Override
     protected Matrix doTranspose(final double[] n) {
         return new AnySquareMatrix(n);
+    }
+
+    /**
+     * A method returns an absolute value of the field.
+     *
+     * @return the absolute value
+     */
+    @Override
+    public double abs() {
+        return determinant();
     }
 
     /**

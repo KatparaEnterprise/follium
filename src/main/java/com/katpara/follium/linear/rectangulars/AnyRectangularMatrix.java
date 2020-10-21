@@ -7,7 +7,7 @@ import com.katpara.follium.linear.AbstractMatrix;
 import com.katpara.follium.linear.Matrix;
 import com.katpara.follium.linear.squares.AnySquareMatrix;
 
-public class AnyRectangularMatrix extends AbstractMatrix {
+public final class AnyRectangularMatrix extends AbstractMatrix {
     /**
      * The constructor is used for rectangular matrices.
      *
@@ -112,6 +112,18 @@ public class AnyRectangularMatrix extends AbstractMatrix {
     /**
      * The method is implemented by the sub-classes.
      *
+     * @param n the scaled array
+     *
+     * @return the scaled matrix
+     */
+    @Override
+    protected Matrix doMultiply(final double[] n) {
+        return new AnyRectangularMatrix(n, s);
+    }
+
+    /**
+     * The method is implemented by the sub-classes.
+     *
      * @param n the multiplied array
      * @param m the multiplying matrix
      *
@@ -146,6 +158,16 @@ public class AnyRectangularMatrix extends AbstractMatrix {
     @Override
     public int getRank() {
         return 0;
+    }
+
+    /**
+     * A method returns an absolute value of the field.
+     *
+     * @return the absolute value
+     */
+    @Override
+    public double abs() {
+        throw new NotSquareMatrixException();
     }
 
     /**

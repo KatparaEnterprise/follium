@@ -23,13 +23,13 @@ public final class IdentityMatrix implements SquareMatrix {
     /**
      * Holds the matrix size
      */
-    protected final int[] s;
+    protected final int s;
 
     public IdentityMatrix(final int r) {
         if (r <= 0)
             throw new InvalidMatrixDimensionProvidedException();
 
-        this.s = new int[]{r, r};
+        this.s = r;
     }
 
     public IdentityMatrix(final double[] e) {
@@ -40,7 +40,7 @@ public final class IdentityMatrix implements SquareMatrix {
             if (_e != 1)
                 throw new InvalidParameterProvidedException();
 
-        this.s = new int[]{e.length, e.length};
+        this.s = e.length;
     }
 
     public IdentityMatrix(final double[][] e) {
@@ -57,7 +57,7 @@ public final class IdentityMatrix implements SquareMatrix {
             }
         }
 
-        this.s = new int[]{e.length, e.length};
+        this.s = e.length;
     }
 
     /**
@@ -124,7 +124,7 @@ public final class IdentityMatrix implements SquareMatrix {
      */
     @Override
     public int[] size() {
-        return Arrays.copyOf(s, 2);
+        return new int[]{s, s};
     }
 
     /**
@@ -176,10 +176,10 @@ public final class IdentityMatrix implements SquareMatrix {
      */
     @Override
     public double[] toArray() {
-        var n = new double[s[0] * s[0]];
+        var n = new double[s * s];
 
-        for (int i = 0; i < s[0]; i++) {
-            n[(i * s[0]) + i] = 1;
+        for (int i = 0; i < s; i++) {
+            n[(i * s) + i] = 1;
         }
 
         return n;
@@ -194,10 +194,10 @@ public final class IdentityMatrix implements SquareMatrix {
      */
     @Override
     public double[] getRow(final int row) {
-        if (row < 0 || row >= s[0])
+        if (row < 0 || row >= s)
             throw new IndexOutOfBoundsException();
 
-        var n = new double[s[0]];
+        var n = new double[s];
         n[row] = 1;
         return n;
     }
@@ -211,10 +211,10 @@ public final class IdentityMatrix implements SquareMatrix {
      */
     @Override
     public double[] getColumn(final int column) {
-        if (column < 0 || column >= s[1])
+        if (column < 0 || column >= s)
             throw new IndexOutOfBoundsException();
 
-        var n = new double[s[0]];
+        var n = new double[s];
         n[column] = 1;
         return n;
     }
@@ -227,7 +227,7 @@ public final class IdentityMatrix implements SquareMatrix {
      */
     @Override
     public int getRank() {
-        return s[0];
+        return s;
     }
 
     /**
@@ -247,9 +247,19 @@ public final class IdentityMatrix implements SquareMatrix {
      */
     @Override
     public double[] getDiagonalEntries() {
-        var n = new double[s[0]];
+        var n = new double[s];
         Arrays.fill(n, 1);
         return n;
+    }
+
+    /**
+     * A method returns an absolute value of the field.
+     *
+     * @return the absolute value
+     */
+    @Override
+    public double abs() {
+        return 1;
     }
 
     /**
@@ -261,29 +271,29 @@ public final class IdentityMatrix implements SquareMatrix {
      */
     @Override
     public Matrix add(final Matrix m) {
-        if (!Arrays.equals(s, m.size()))
+        if (!Arrays.equals(size(), m.size()))
             throw new MatrixDimensionMismatchException();
 
         if (m instanceof ZeroMatrix)
             return this;
 
         if (m instanceof IdentityMatrix) {
-            var n = new double[s[0]];
+            var n = new double[s];
             Arrays.fill(n, 2);
             return new DiagonalMatrix(n);
         }
 
         if (m instanceof DiagonalMatrix) {
-            var n = Arrays.copyOf(m.getDiagonalEntries(), s[0]);
-            for (int i = 0; i < s[0]; i++) {
+            var n = Arrays.copyOf(m.getDiagonalEntries(), s);
+            for (int i = 0; i < s; i++) {
                 n[i] += 1;
             }
             return new DiagonalMatrix(n);
         }
 
-        var n = Arrays.copyOf(m.toArray(), s[0] * s[1]);
-        for (int i = 0; i < s[0]; i++) {
-            n[(i * s[0]) + i] += 1;
+        var n = Arrays.copyOf(m.toArray(), s * s);
+        for (int i = 0; i < s; i++) {
+            n[(i * s) + i] += 1;
         }
 
         return new AnySquareMatrix(n);
@@ -298,30 +308,43 @@ public final class IdentityMatrix implements SquareMatrix {
      */
     @Override
     public Matrix subtract(final Matrix m) {
-        if (!Arrays.equals(s, m.size()))
+        if (!Arrays.equals(size(), m.size()))
             throw new MatrixDimensionMismatchException();
 
         if (m instanceof ZeroMatrix)
             return this;
 
         if (m instanceof IdentityMatrix)
-            return new ZeroMatrix(s[0], s[1]);
+            return new ZeroMatrix(s, s);
 
         if (m instanceof DiagonalMatrix) {
-            var n = Arrays.copyOf(m.getDiagonalEntries(), s[0]);
-            for (int i = 0; i < s[0]; i++) {
+            var n = Arrays.copyOf(m.getDiagonalEntries(), s);
+            for (int i = 0; i < s; i++) {
                 n[i] = 1 - n[i];
             }
             return new DiagonalMatrix(n);
         }
 
-        var n = Arrays.copyOf(m.toArray(), s[0] * s[1]);
-        for (int i = 0; i < s[0]; i++) {
-            var t = (i * s[0]) + i;
+        var n = Arrays.copyOf(m.toArray(), s * s);
+        for (int i = 0; i < s; i++) {
+            var t = (i * s) + i;
             n[t] = 1 - n[t];
         }
 
         return new AnySquareMatrix(n);
+    }
+
+    /**
+     * The method multiplies the field with a scalar entity.
+     *
+     * @param scalar the scalar entity
+     *
+     * @return the multiplied field
+     */
+    @Override
+    public Matrix multiply(final double scalar) {
+        var n = new double[s];
+        return null;
     }
 
     /**
@@ -333,7 +356,7 @@ public final class IdentityMatrix implements SquareMatrix {
      */
     @Override
     public Matrix multiply(final Matrix m) {
-        if (s[1] != m.size()[0])
+        if (s != m.size()[0])
             throw new MatrixDimensionMismatchException();
 
         return m;
@@ -370,7 +393,7 @@ public final class IdentityMatrix implements SquareMatrix {
      */
     @Override
     public Matrix getAdditiveInverse() {
-        var n = new double[s[0]];
+        var n = new double[s];
         Arrays.fill(n, -1);
         return new DiagonalMatrix(n);
     }
@@ -396,16 +419,16 @@ public final class IdentityMatrix implements SquareMatrix {
     @Override
     public String toString(final Rounding.Decimals decimals) {
         StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < s[0]; i++) {
+        for (int i = 0; i < s; i++) {
             sb.append("|");
-            for (int j = 0; j < s[1]; j++) {
+            for (int j = 0; j < s; j++) {
                 if (i == j) {
                     sb.append(1);
                 } else {
                     sb.append(0);
                 }
 
-                if (j != s[1] - 1)
+                if (j != s - 1)
                     sb.append(" ");
             }
             sb.append("|\n");
@@ -450,7 +473,9 @@ public final class IdentityMatrix implements SquareMatrix {
      */
     @Override
     public int hashCode() {
-        return Arrays.hashCode(s);
+        var result = 17;
+        result = 31 * result + s;
+        return result;
     }
 
     /**

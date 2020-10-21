@@ -231,10 +231,10 @@ public abstract class AbstractMatrix implements Matrix {
      */
     @Override
     public final Matrix getAdditiveInverse() {
-        var n = Arrays.copyOf(e, s[0] * s[1]);
+        var n = Arrays.copyOf(e, e.length);
 
         for (int i = 0; i < e.length; i++) {
-            n[i] = (i == 0) ? 0 : -n[i];
+            n[i] = (n[i] == 0) ? 0 : -n[i];
         }
 
         return doAdditiveInverse(n);
@@ -248,6 +248,39 @@ public abstract class AbstractMatrix implements Matrix {
      * @return the inverse matrix
      */
     protected abstract Matrix doAdditiveInverse(final double[] n);
+
+    /**
+     * The method multiplies the field with a scalar entity.
+     *
+     * @param scalar the scalar entity
+     *
+     * @return the multiplied field
+     */
+    @Override
+    public final Matrix multiply(final double scalar) {
+        if(scalar == -1)
+            return getAdditiveInverse();
+        if(scalar == 0)
+            return new ZeroMatrix(s[0], s[1]);
+        if(scalar == 1)
+            return this;
+
+        var n = Arrays.copyOf(e, e.length);
+        for (int i = 0; i < n.length; i++) {
+            n[i] *= scalar;
+        }
+
+        return doMultiply(n);
+    }
+
+    /**
+     * The method is implemented by the sub-classes.
+     *
+     * @param n the scaled array
+     *
+     * @return the scaled matrix
+     */
+    protected abstract Matrix doMultiply(final double[] n);
 
     /**
      * A field can multiply with another of the same type.
@@ -466,7 +499,10 @@ public abstract class AbstractMatrix implements Matrix {
      */
     @Override
     public final int hashCode() {
-        return Arrays.hashCode(e);
+        var result = 17;
+        result = 31 * result + Arrays.hashCode(e);
+        result = 31 * result + Arrays.hashCode(s);
+        return result;
     }
 
     /**

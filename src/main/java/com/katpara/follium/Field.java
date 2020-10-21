@@ -14,6 +14,13 @@ import com.katpara.follium.util.Rounding;
 public interface Field<F> {
 
     /**
+     * A method returns an absolute value of the field.
+     *
+     * @return the absolute value
+     */
+    double abs();
+
+    /**
      * A fields can be added to another field of the same type.
      *
      * @param f the other field
@@ -30,6 +37,15 @@ public interface Field<F> {
      * @return the resulting field
      */
     F subtract(F f);
+
+    /**
+     * The method multiplies the field with a scalar entity.
+     *
+     * @param scalar the scalar entity
+     *
+     * @return the multiplied field
+     */
+    F multiply(final double scalar);
 
     /**
      * A field can multiply with another of the same type.

@@ -191,4 +191,38 @@ class DiagonalMatrixTest {
                 () -> assertEquals("AnyRectangularMatrix", m1.multiply(m4).getClass().getSimpleName())
         );
     }
+
+    @Test
+    void divide() {
+        assertAll(
+                () -> assertThrows(MatrixDimensionMismatchException.class, () -> m1.divide(m2)),
+                () -> assertThrows(MatrixDimensionMismatchException.class, () -> m1.divide(new IdentityMatrix(4))),
+                () -> assertEquals(new IdentityMatrix(3), m1.divide(m1)),
+                () -> assertEquals(m1, m1.divide(new IdentityMatrix(3)))
+        );
+    }
+
+
+    @Test
+    void power() {
+        Matrix r1 = new DiagonalMatrix(new double[]{1, (double) 1/2 , (double)1/3});
+        Matrix r2 = new DiagonalMatrix(new double[]{1, 32, 243});
+
+        assertAll(
+                () -> assertEquals(r1, m1.power(-1)),
+                () -> assertEquals(m1, m1.power(1)),
+                () -> assertEquals(new IdentityMatrix(3), m1.power(0)),
+                () -> assertEquals(r2, m1.power(5))
+        );
+    }
+
+    @Test
+    void additiveInverse() {
+        assertEquals(new DiagonalMatrix(new double[]{-1, -2, -3}), m1.getAdditiveInverse());
+    }
+
+    @Test
+    void multiplicativeInverse() {
+        assertEquals(new DiagonalMatrix(new double[]{1, (double) 1/2 , (double)1/3}), m1.getMultiplicativeInverse());
+    }
 }

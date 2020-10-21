@@ -4,6 +4,7 @@ import com.katpara.follium.exceptions.InvalidParameterProvidedException;
 import com.katpara.follium.exceptions.linears.InvalidMatrixDimensionProvidedException;
 import com.katpara.follium.exceptions.linears.MatrixDimensionMismatchException;
 import com.katpara.follium.exceptions.linears.NotInvertibleException;
+import com.katpara.follium.exceptions.linears.NotSquareMatrixException;
 import com.katpara.follium.linear.Matrix;
 import com.katpara.follium.util.Rounding;
 
@@ -186,6 +187,19 @@ public final class ZeroMatrix implements Matrix {
     }
 
     /**
+     * A method returns an absolute value of the field.
+     *
+     * @return the absolute value
+     */
+    @Override
+    public double abs() {
+        if (s[0] != s[1])
+            throw new NotSquareMatrixException();
+
+        return 0;
+    }
+
+    /**
      * A fields can be added to another field of the same type.
      *
      * @param m the other field
@@ -213,6 +227,18 @@ public final class ZeroMatrix implements Matrix {
             throw new MatrixDimensionMismatchException();
 
         return m.getAdditiveInverse();
+    }
+
+    /**
+     * The method multiplies the field with a scalar entity.
+     *
+     * @param scalar the scalar entity
+     *
+     * @return the multiplied field
+     */
+    @Override
+    public Matrix multiply(final double scalar) {
+        return this;
     }
 
     /**
@@ -336,7 +362,9 @@ public final class ZeroMatrix implements Matrix {
      */
     @Override
     public int hashCode() {
-        return Arrays.hashCode(s);
+        var result = 17;
+        result = 31 * result + Arrays.hashCode(s);
+        return result;
     }
 
     /**
