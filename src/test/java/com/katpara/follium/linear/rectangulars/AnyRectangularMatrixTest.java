@@ -210,25 +210,25 @@ class AnyRectangularMatrixTest {
     @Test
     void additiveInverse() {
         Matrix m1 = new AnyRectangularMatrix(new double[][]{
-                {0, 1},
+                {1, 1},
                 {1, 2},
                 {5, 6}
         });
 
         Matrix m2 = new AnyRectangularMatrix(new double[][]{
-                {0, 1, 2, 3},
+                {1, 1, 2, 3},
                 {1, 2, 3, 4},
                 {5, 6, 7, 8}
         });
 
         Matrix r1 = new AnyRectangularMatrix(new double[][]{
-                {0, -1},
+                {-1, -1},
                 {-1, -2},
                 {-5, -6}
         });
 
         Matrix r2 = new AnyRectangularMatrix(new double[][]{
-                {0, -1, -2, -3},
+                {-1, -1, -2, -3},
                 {-1, -2, -3, -4},
                 {-5, -6, -7, -8}
         });
@@ -368,7 +368,35 @@ class AnyRectangularMatrixTest {
                         {1, 2}
                 })
         );
+    }
 
+    @Test
+    void multiplyScalar() {
+        Matrix m1 = new AnyRectangularMatrix(new double[][]{
+                {1, 1, 2},
+                {1, 2, 3}
+        });
 
+        Matrix r1 = new AnyRectangularMatrix(new double[][]{
+                {-1, -1, -2},
+                {-1, -2, -3}
+        });
+
+        Matrix r2 = new AnyRectangularMatrix(new double[][]{
+                {5, 5, 10},
+                {5, 10, 15}
+        });
+        Matrix r3 = new AnyRectangularMatrix(new double[][]{
+                {-7, -7, -14},
+                {-7, -14, -21}
+        });
+
+        assertAll(
+                () -> assertEquals(r1, m1.multiply(-1)),
+                () -> assertEquals(new ZeroMatrix(2, 3), m1.multiply(0)),
+                () -> assertEquals(m1, m1.multiply(1)),
+                () -> assertEquals(r2, m1.multiply(5)),
+                () -> assertEquals(r3, m1.multiply(-7))
+        );
     }
 }

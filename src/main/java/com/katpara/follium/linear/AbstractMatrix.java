@@ -234,7 +234,7 @@ public abstract class AbstractMatrix implements Matrix {
         var n = Arrays.copyOf(e, e.length);
 
         for (int i = 0; i < e.length; i++) {
-            n[i] = (n[i] == 0) ? 0 : -n[i];
+            n[i] = -n[i];
         }
 
         return doAdditiveInverse(n);
@@ -267,7 +267,7 @@ public abstract class AbstractMatrix implements Matrix {
 
         var n = Arrays.copyOf(e, e.length);
         for (int i = 0; i < n.length; i++) {
-            n[i] *= scalar;
+                n[i] *= scalar;
         }
 
         return doMultiply(n);
@@ -328,7 +328,7 @@ public abstract class AbstractMatrix implements Matrix {
         if (s[1] != _s[0])
             throw new MatrixDimensionMismatchException();
 
-        if(isSquareMatrix() || m == this)
+        if (isSquareMatrix() && m == this)
             return new IdentityMatrix(s[0]);
 
         if(m instanceof IdentityMatrix)
